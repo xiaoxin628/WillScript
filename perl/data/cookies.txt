@@ -1,0 +1,12 @@
+#LWP-Cookies-1.0
+Set-Cookie3: _l5=y; path="/"; domain=.diandian.com; path_spec; expires="2013-05-18 03:58:34Z"; version=0
+Set-Cookie3: alf=1; path="/"; domain=.diandian.com; path_spec; expires="2012-05-23 21:58:34Z"; version=0
+Set-Cookie3: dru=1298451663; path="/"; domain=.diandian.com; path_spec; expires="2012-06-22 03:58:34Z"; version=0
+Set-Cookie3: dtid=KOk617ZvLFnrIAzrJC1HTIaGyev6bwBt; path="/"; domain=.diandian.com; path_spec; expires="2014-05-13 03:56:32Z"; version=0
+Set-Cookie3: t=57yb9muagq5hzck3jlcate5shgaoln05; path="/"; domain=.diandian.com; path_spec; expires="2012-06-22 03:58:34Z"; HTTPOnly; version=0
+Set-Cookie3: XMIL_2cf5_forum_lastvisit=D_1_1337743574; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-05-30 03:26:14Z"; version=0
+Set-Cookie3: XMIL_2cf5_lastact=1337744814%09home.php%09space; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-05-24 03:46:54Z"; version=0
+Set-Cookie3: XMIL_2cf5_lastvisit=1337739974; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-06-22 03:26:14Z"; version=0
+Set-Cookie3: XMIL_2cf5_saltkey=wnVzn2rr; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-06-22 03:26:14Z"; httponly; version=0
+Set-Cookie3: XMIL_2cf5_sid=C1SCw2; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-05-24 03:46:54Z"; version=0
+Set-Cookie3: XMIL_2cf5_visitedfid=1; path="/"; domain=.xiaomi.cn; path_spec; expires="2012-06-22 03:26:14Z"; version=0

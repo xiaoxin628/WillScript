@@ -1,0 +1,129 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use threads;
+use Thread::Queue;
+use HTML::TreeBuilder;
+use LWP::Simple;
+use HTTP::Cookies;
+use File::Basename;
+use Data::Dumper;
+#use URI::Escape;
+
+#############Config######################
+#our $url = 'http://www.topit.me/%d';
+#our $url = 'http://www.topit.me/tag/%E6%91%84%E5%BD%B1?p=%d';
+our $url = 'http://www.topit.me/tag/诱惑?p=%d';
+our $downThreadNum = '10';
+#our $savePath = "/home/will/Dropbox/code/Script/perl/data/Image/";
+our $savePath = "/media/01CD300E376A6F50/fetchImage/Topit.me/youhuo/";
+our $pages = 100;
+our @downqueue :shared = ();
+our $qnum :shared = 0;
+our $taskNum :shared = 0;
+#############Config######################
+
+
+#############Queue######################
+my $q = Thread::Queue->new();
+#############Queue######################
+
+#############Agent######################
+my $agent = LWP::UserAgent->new();
+$agent->timeout(10);
+$agent->agent('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0');
+$agent->from('http://www.diandian.com/');
+my $cookie_jar = HTTP::Cookies->new(file => "$ENV{'PWD'}/cookies.txt", 'autosave' => 1);
+$agent->cookie_jar($cookie_jar);
+$agent->show_progress(1);
+#############Agent######################
+
+
+#############Request######################
+my @fetchHtmlThread = [];
+for (my $i = 1; $i <= $pages; $i++) {
+	my $targeturl = sprintf($url, $i);
+	$fetchHtmlThread[$i] = threads->create(\&fetchHTML,$targeturl, $agent);
+	#$fetchHtmlThread[$i]->join();
+	#&fetchHTML($url.$i, $agent);
+}
+
+
+#############Request######################
+
+#############Function######################
+sub fetchHTML{
+	my($url, $agent) = @_;
+	print "Fetch HTML ...", "\n";
+	my $response = $agent->get($url);
+	if ($response->is_success) {
+		&fetchImage($response->content);
+	}else{
+		print $response->status_line, "\n";
+	}
+}
+
+sub fetchImage{
+	my($html) = @_;
+	my $tree = new HTML::TreeBuilder;
+	$tree->parse_content($html);
+	my @imgs = $tree->find_by_tag_name('img');
+	foreach my $img (@imgs){
+		my $src = $img->attr('src');
+		if ($src) {
+			$src =~ s/m.jpg/l.jpg/;
+			my $filename = basename($src);
+			if (-e $savePath.$filename) {
+				printf("the file [$filename] is exist!\n");
+			}else{
+				$qnum ++;
+				#the task left num
+				$taskNum ++;
+				$downqueue[$qnum] = $src;
+				$q->enqueue($qnum);
+				print "save [$filename] to the queue!\n";
+			}
+		}
+	
+	}
+	$tree = $tree->delete;	
+}
+
+sub download{
+	my($qnum) = @_;
+		if ($qnum) {
+				my $src = $downqueue[$qnum];
+				printf("down $src\n");
+				my $filename = basename($src);
+				print "[$filename] download complete!\n";
+				delete $downqueue[$qnum];
+				getstore($src, $savePath.$filename);
+				$taskNum --;
+				print "Task :[$taskNum]\n";
+				
+		}
+}
+
+#############Function######################
+
+for (my $i = 1; $i <= $pages; $i++) {
+	$fetchHtmlThread[$i]->join();
+}
+
+while(1){
+	my $qnum = $q->dequeue();
+	if ($qnum) {
+		my $downThread = threads->create(\&download, $qnum);
+		$downThread->detach();
+		print("Down Task is left [".$q->pending()."]!\n");
+	}else{
+		sleep(10);
+		print("the downqueue is empty, you can stop the script now!\n");
+	}
+}
+
+#for (my $i = 1; $i <= scalar(@downqueue); $i++) {
+#	$downThreadList[$i] = threads->create(\&download);
+#	$downThreadList[$i]->join();
+#}
+print(scalar(@downqueue)."\n");

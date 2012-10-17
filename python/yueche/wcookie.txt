@@ -1,0 +1,7 @@
+# Netscape HTTP Cookie File
+# http://www.netscape.com/newsref/std/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+haijia.bjxueche.net	FALSE	/	FALSE	1353039316	BookingCode	srs1T66YBYl8c+HCL4WZDi1tEhoiyj/YR2YNhGt0fwV6csMjKJ3gyw==
+haijia.bjxueche.net	FALSE	/	FALSE	1353039316	ImgCode	Q73fsrhw+VE=
+haijia.bjxueche.net	FALSE	/	FALSE	1350449112	LoginOn	LYxT+5zDfR/0rATJU81i0MbqCIEswr6QyEs9JO2WR5rxQ0ygV6L1/7kW27OV0CcQ2P8OJWjYagOFWttMrPKJmT3qTL9EBtHQh11q8hq6Hs4PIhfVk+YwyGT172OnMOxzSmgwCj7UgAPVSCTl4k58V5u0XW1q5S/2OBHW/SWuirD/lpANsloY3pRUrQs1EyLLnENYc8APlMuDgp4HnjFNA7/IpcZElRGtc5AOtvbGi/Bk4VAf3lG8P2mcZC2LIgiDkkXwGrIEWdJBmPRXPcSok0sxXGupkk7Ex2xCVph0yWwsb2K7MeqTgyPKB22jXP3NbQEeRz/qAVPGXqH65z888sZnhexKc52y+L8t7m7tGzoFsV1p1uIM3zuq1mtX/u03qtBT6gYCFQ4ULdjATVaRMZpqpB/iRTQPF3qeg6cFroF9Cf7ZFF4WBuyze9wAz1gS1dXK+Vxt7N3UtVw/CRtOz2HMvWT8FuqUAsX665Ikn9dCEjkSWiVpJqxoFPA4uMhfcOLEGgSgJBZTLZTYEEeV/G5WLpRKEu4eG9A+A4rUWvsXX8GXKUc7yNctI8fGoYbB

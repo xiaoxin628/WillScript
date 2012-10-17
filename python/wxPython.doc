@@ -1,0 +1,46 @@
+Help on package wxPython:
+
+NAME
+    wxPython - # The "old" wxPython package
+
+FILE
+    /usr/lib/python2.7/dist-packages/wx-2.8-gtk2-unicode/wxPython/__init__.py
+
+MODULE DOCS
+    http://docs.python.org/library/wxPython
+
+PACKAGE CONTENTS
+    _controls
+    _core
+    _gdi
+    _misc
+    _windows
+    _wx
+    activex
+    animate
+    calendar
+    gizmos
+    glcanvas
+    grid
+    help
+    html
+    htmlhelp
+    iewin
+    lib (package)
+    media
+    stc
+    tools (package)
+    webkit
+    wizard
+    xrc
+
+SUBMODULES
+    wx
+
+DATA
+    __version__ = '2.8.12.1'
+
+VERSION
+    2.8.12.1
+
+
