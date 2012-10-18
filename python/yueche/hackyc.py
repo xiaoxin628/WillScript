@@ -21,6 +21,7 @@ password = users[user]['password']
 rDate = users['will']['date']
 reserveDate = ""
 reserveTime = ""
+logPath = sys.path[0]+"/"
 
 postCookie = {
 	'txtIMGCode':'hukv',#定义验证码 每次都用同一个验证码
@@ -231,7 +232,7 @@ def errorLog(log):
 		print log
 		print logFooter
 	else:
-		f = file(user+'.log', "aw")	
+		f = file(logPath+user+'.log', "aw")	
 		logHeader += time.strftime("%Y-%m-%d %X", time.localtime())+"\r\n"
 		logHeader += "username: %s" %(username)+"\r\n"
 		f.write(logHeader)
@@ -242,8 +243,8 @@ def errorLog(log):
 def writeLock(date, time):
 	lockDir = {}
 	#文件存在则读取文件,不存在则创建新的
-	if os.path.exists(user+'.lock'):
-		f = file(user+'.lock', 'r')
+	if os.path.exists(logPath+user+'.lock'):
+		f = file(logPath+user+'.lock', 'r')
 		lockDir = cPickle.load(f)
 		f.close()
 	else:		
@@ -259,14 +260,14 @@ def writeLock(date, time):
 			lockDir[configDate+'_'+configTime] = '0'	
 
 	lockDir[date+'_'+time] = '1'	
-	f = file(user+'.lock', 'w')
+	f = file(logPath+user+'.lock', 'w')
 	cPickle.dump(lockDir, f)
 	f.close()
 
 def checkLock():
 	lockDir = {}
-	if os.path.isfile(user+'.lock'):
-		f = file(user+'.lock', 'r')
+	if os.path.isfile(logPath+user+'.lock'):
+		f = file(logPath+user+'.lock', 'r')
 		lockDir = cPickle.load(f)
 		f.close()
 		if lockDir:
@@ -292,7 +293,6 @@ def checkLock():
 			return False
 	else:
 		return False
-print "test"			
 if checkLock():	
 	runLog="%s 'job done!" %(username)
 	errorLog(runLog)
