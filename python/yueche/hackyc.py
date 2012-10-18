@@ -109,6 +109,7 @@ def findButton():
 		#循环取出要预约的日期
 		if len(rDate) >= 1: 
 			for dateItem in rDate:
+				leftTime = ''
 				reserveDate = todayYear+dateItem[0]
 				reserveTime = dateItem[1]
 				Date = reserveDate
@@ -291,7 +292,7 @@ def checkLock():
 			return False
 	else:
 		return False
-			
+print "test"			
 if checkLock():	
 	runLog="%s 'job done!" %(username)
 	errorLog(runLog)
