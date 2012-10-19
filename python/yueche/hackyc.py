@@ -114,32 +114,41 @@ def findButton():
 				leftTime = ''
 				reserveDate = todayYear+dateItem[0]
 				reserveTime = dateItem[1]
-				Date = reserveDate
-				time = reserveTimeData[reserveTime]
-				rule = "//td[@yyrq='"+Date+"' and @yysd='"+time+"']"
+				searchDate = reserveDate
+				searchTime = reserveTimeData[reserveTime]
+				rule = "//td[@yyrq='"+searchDate+"' and @yysd='"+searchTime+"']"
 				chooseDate = htmlString.xpath(rule)
 				if chooseDate:
 					leftTime = chooseDate[0].text.strip()
 					if leftTime >= 0 and leftTime != '无' and leftTime != '已约':
-						runLog = "date: %s %s times:%s" % (Date, time, leftTime)
+						runLog = "date: %s %s times:%s" % (searchDate, searchTime, leftTime)
 						errorLog(runLog)
-						getCars(Date, time)
+						getCars(searchDate, searchTime)
 					else:
-						runLog = "date: %s %s times:%s" % (Date, time, leftTime)
-						runLog = "Sorry! %s %s The left time is %s" % (Date, time, leftTime)
+						runLog = "date: %s %s times:%s" % (searchDate, searchTime, leftTime)
+						runLog = "Sorry! %s %s The left time is %s" % (searchDate, searchTime, leftTime)
 						errorLog(runLog)
 				else:
-					rule = "//td[@yyrq and @yysd]"
-					htmldoc = opener.open(targetUrl, timeout=timeOut).read()
-					htmldoc = htmldoc.decode("utf-8", "ignore")
-					htmlString = lxml.html.fromstring(htmldoc)
-					Datelist = htmlString.xpath(rule)
-					tableStr = ''
-					if	Datelist:
-						for item in Datelist:
-							tableStr = "Date:%s Time:%s Times:%s" %(item.attrib['yyrq'], item.attrib['yysd'], item.text_content().strip())+"\r\n"
-					runLog = "date: %s %s times:%s not found the button" % (Date, time, leftTime)
-					errorLog(runLog)
+					bookTime =  time.mktime(time.strptime(reserveDate,'%Y%m%d'))
+					expiredTime =  int(time.time())+3600*24*7
+					#print time.strftime("%Y-%m-%d ", time.localtime(expiredTime)) #debug
+					if expiredTime >= bookTime:
+						rule = "//td[@yyrq and @yysd]"
+						htmldoc = opener.open(targetUrl, timeout=timeOut).read()
+						htmldoc = htmldoc.decode("utf-8", "ignore")
+						htmlString = lxml.html.fromstring(htmldoc)
+						Datelist = htmlString.xpath(rule)
+						tableStr = 'list:\r\n'
+						if	Datelist:
+							for item in Datelist:
+								tableStr += "Date:%s Time:%s Times:%s" %(item.attrib['yyrq'], item.attrib['yysd'], item.text_content().strip())+"\r\n"
+						runLog = "date: %s %s times:%s not found the button" % (searchDate, searchTime, leftTime)
+						runLog += tableStr
+						errorLog(runLog)
+					else:
+						runLog="%s %s car  must before %s" %(searchDate, searchTime, time.strftime("%Y-%m-%d", time.localtime(expiredTime)))
+						errorLog(runLog)
+
 		else:
 			runLog = "you did'nt choose a book time"
 			errorLog(runLog)
@@ -154,7 +163,7 @@ def findButton():
 		print "Oh, we got a problem!"
 			
 #获取预约时间当天所有车辆
-def getCars(date, time):
+def getCars(wDate, wTime):
 	waitTime()
 	global wcookie, opener, carList
 	targetUrl = 'http://haijia.bjxueche.net/Han/ServiceBooking.asmx/GetCars'
@@ -162,8 +171,8 @@ def getCars(date, time):
 		'pageNum':1,
 		'pageSize':35,
 		'xllxID':'2',
-		'yyrq':str(date),
-		'yysd':str(time),
+		'yyrq':str(wDate),
+		'yysd':str(wTime),
 	}
 	#记录日志
 	runLog = "get Cars..."
@@ -181,7 +190,7 @@ def getCars(date, time):
 				if k == "CNBH":
 				 	carList.append(v)
 		#开始约车
-		bookingCar(date, time)
+		bookingCar(wDate, wTime)
 	except:
 		import traceback,sys
 		runLog="".join(traceback.format_exception(*sys.exc_info()))
@@ -189,15 +198,15 @@ def getCars(date, time):
 		print "Oh, we got a problem!"
 
 #预约车
-def bookingCar(date, time):
+def bookingCar(wDate, wTime):
 	waitTime()
 	targetUrl = 'http://haijia.bjxueche.net/Han/ServiceBooking.asmx/BookingCar'
 	postData = {
 		'KMID':'2',
 		'cnbh':carList[0],
 		'imgCode':md5.md5(postCookie['txtBookingCode'].upper()).hexdigest(),
-		'yyrq':str(date),
-		'xnsd':str(time),
+		'yyrq':str(wDate),
+		'xnsd':str(wTime),
 	}
 	runLog = "Booking Car"
 	errorLog(runLog)
@@ -212,7 +221,7 @@ def bookingCar(date, time):
 		jsontext = json.loads(jsondoc)
 		jsonData = json.loads(jsontext['d'])
 		if jsonData[0]['Result'] == True:
-			writeLock(date, time)
+			writeLock(wDate, wTime)
 			runLog = "Booking car done!"
 			errorLog(runLog)
 		runLog = jsondoc
@@ -243,7 +252,7 @@ def errorLog(log):
 		f.write(logFooter)
 		f.close()
 
-def writeLock(date, time):
+def writeLock(wDate, wTime):
 	lockDir = {}
 	#文件存在则读取文件,不存在则创建新的
 	if os.path.exists(logPath+user+'.lock'):
@@ -262,7 +271,7 @@ def writeLock(date, time):
 			configTime = reserveTimeData[item[1]]
 			lockDir[configDate+'_'+configTime] = '0'	
 
-	lockDir[date+'_'+time] = '1'	
+	lockDir[wDate+'_'+wTime] = '1'	
 	f = file(logPath+user+'.lock', 'w')
 	cPickle.dump(lockDir, f)
 	f.close()
