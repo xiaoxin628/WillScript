@@ -4,7 +4,7 @@
 #Author   :   Will
 
 import lxml.html, lxml.etree
-import sys, os, urllib, urllib2, cookielib, Cookie, datetime, time, json, md5, re, cPickle
+import sys, os, urllib, urllib2, cookielib, Cookie, datetime, time, json, md5, re, cPickle, random
 from config import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -18,7 +18,7 @@ user = sys.argv[1]
 targetUrl = 'http://haijia.bjxueche.net/login.aspx'
 username = users[user]['username']
 password = users[user]['password']
-rDate = users['will']['date']
+rDate = users[user]['date']
 reserveDate = ""
 reserveTime = ""
 logPath = sys.path[0]+"/"
@@ -100,6 +100,7 @@ def hjLogin(username,password,url):
 		print "Oh, we got a problem!"
 
 def findButton():
+	waitTime()
 	targetUrl = 'http://haijia.bjxueche.net/ych2.aspx'
 	try:
 		runLog = "check left reserve time..."
@@ -154,6 +155,7 @@ def findButton():
 			
 #获取预约时间当天所有车辆
 def getCars(date, time):
+	waitTime()
 	global wcookie, opener, carList
 	targetUrl = 'http://haijia.bjxueche.net/Han/ServiceBooking.asmx/GetCars'
 	postData = {
@@ -188,6 +190,7 @@ def getCars(date, time):
 
 #预约车
 def bookingCar(date, time):
+	waitTime()
 	targetUrl = 'http://haijia.bjxueche.net/Han/ServiceBooking.asmx/BookingCar'
 	postData = {
 		'KMID':'2',
@@ -248,13 +251,13 @@ def writeLock(date, time):
 		lockDir = cPickle.load(f)
 		f.close()
 	else:		
-		for item in users['will']['date']:
+		for item in users[user]['date']:
 			configDate = todayYear+item[0]
 			configTime = reserveTimeData[item[1]]
 			lockDir[configDate+'_'+configTime] = '0'	
 	#容错，如果文件存在且内容不正确 则重新写入文件内容
 	if 	not lockDir:
-		for item in users['will']['date']:
+		for item in users[user]['date']:
 			configDate = todayYear+item[0]
 			configTime = reserveTimeData[item[1]]
 			lockDir[configDate+'_'+configTime] = '0'	
@@ -272,7 +275,7 @@ def checkLock():
 		f.close()
 		if lockDir:
 			#检测到所有日期的车都约过了的时候就会返回真，让脚本停止
-			for item in users['will']['date']:
+			for item in users[user]['date']:
 				configDate = todayYear+item[0]
 				configTime = reserveTimeData[item[1]]
 				bookTime =  time.mktime(time.strptime(configDate,'%Y%m%d'))
@@ -293,9 +296,16 @@ def checkLock():
 			return False
 	else:
 		return False
+def waitTime():
+	sec = random.randint(1, 6)
+	runLog="wait %s seconds because not will be forden the IP!" %(sec)
+	errorLog(runLog)
+	time.sleep(sec)
+
 if checkLock():	
 	runLog="%s 'job done!" %(username)
 	errorLog(runLog)
 	exit(0)
 	
 hjLogin(username,password,targetUrl)
+
