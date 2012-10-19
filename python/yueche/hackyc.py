@@ -146,7 +146,7 @@ def findButton():
 						runLog += tableStr
 						errorLog(runLog)
 					else:
-						runLog="%s %s car  must before %s" %(searchDate, searchTime, time.strftime("%Y-%m-%d", time.localtime(expiredTime)))
+						runLog="only book car before %s !your date: %s %s" %(time.strftime("%Y-%m-%d", time.localtime(expiredTime)), searchDate, searchTime)
 						errorLog(runLog)
 
 		else:
@@ -297,7 +297,7 @@ def checkLock():
 						runLog="%s %s car is already booked!" %(item[0], item[1])
 						errorLog(runLog)
 				else:
-					runLog="%s %s car  must before %s" %(item[0], item[1], time.strftime("%Y-%m-%d", time.localtime(expiredTime)))
+					runLog="only book car before %s !your date: %s %s" %(time.strftime("%Y-%m-%d", time.localtime(expiredTime)), item[0], item[1])
 					errorLog(runLog)
 				
 			return True
