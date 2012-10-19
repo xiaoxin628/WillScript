@@ -4,58 +4,12 @@
 #Author   :   Will
 
 import lxml.html, lxml.etree
-import sys, os, urllib, urllib2, cookielib, Cookie, datetime, time, json, md5, re, cPickle, random
+import sys, os, urllib, urllib2, cookielib, Cookie, datetime, time, json, md5, re, cPickle, random ,pprint
 from config import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
-if len(sys.argv)<2:
-	print "./hackyuecheV2.py will"
-	print "will 是config中的配置项，请配置相关用户名和密码"
-	exit()
-#Config
-#是否输出到屏幕 1为输出 0则输出到当前目录下的日志中
-user = sys.argv[1]
-targetUrl = 'http://haijia.bjxueche.net/login.aspx'
-username = users[user]['username']
-password = users[user]['password']
-rDate = users[user]['date']
-reserveDate = ""
-reserveTime = ""
-logPath = sys.path[0]+"/"
 
-postCookie = {
-	'txtIMGCode':'hukv',#定义验证码 每次都用同一个验证码
-	'ImgCode':'Q73fsrhw+VE=',
-	'txtBookingCode':'pj71',
-	'BookingCode':'srs1T66YBYl8c+HCL4WZDi1tEhoiyj/YR2YNhGt0fwV6csMjKJ3gyw==',
-}
-
-reserveTimeData = {
-	'morning':'812',
-	'afternoon':'15',
-	'night':'58',
-}
-
-todayYear = str(datetime.date.today().year)
-
-carList = []
-#COOKIE
-wcookie = cookielib.MozillaCookieJar('./wcookie.txt')
-wcookie.set_cookie(cookielib.Cookie(version=0, name='ImgCode', value=postCookie['ImgCode'], port=None, port_specified=False, domain='haijia.bjxueche.net', domain_specified=False, domain_initial_dot=False, path='/', path_specified=True, secure=None, expires=(int(time.time())+3600*24*30), discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False))
-wcookie.set_cookie(cookielib.Cookie(version=0, name='BookingCode', value=postCookie['BookingCode'], port=None, port_specified=False, domain='haijia.bjxueche.net', domain_specified=False, domain_initial_dot=False, path='/', path_specified=True, secure=None, expires=(int(time.time())+3600*24*30), discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False))
-siteCookie = urllib2.HTTPCookieProcessor(wcookie)
-opener = urllib2.build_opener(siteCookie)	
-
-opener.addheaders = [
-        ('User-Agent','Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:14.0) Gecko/20100101 Firefox/14.0.1 '),
-        ('Referer','http://haijia.bjxueche.net'),
-        ('Content-Type','text/html'),
-        ('Accept-Charset','UTF-8'),
-]
-
-urllib2.install_opener(opener)
-	
-
+#lib
 def setCookie():
 	global opener, wcookie
 #开始登录海驾约车网站
@@ -308,9 +262,84 @@ def checkLock():
 #随机等待时间，不然IP会被封，如果被封，24小时以后解禁。也可以打电话给客服。
 def waitTime():
 	sec = random.randint(1, 6)
-	runLog="wait %s seconds because not will be forden the IP!" %(sec)
+	runLog="wait %s seconds or not the IP will be banned!" %(sec)
 	errorLog(runLog)
 	time.sleep(sec)
+
+
+
+if len(sys.argv)<2:
+	print "./hackyuecheV2.py will"
+	print "will 是config中的配置项，请配置相关用户名和密码"
+	exit()
+#Config
+#是否输出到屏幕 1为输出 0则输出到当前目录下的日志中
+user = sys.argv[1]
+targetUrl = 'http://haijia.bjxueche.net/login.aspx'
+username = users[user]['username']
+password = users[user]['password']
+rDate = users[user]['date']
+reserveDate = ""
+reserveTime = ""
+logPath = sys.path[0]+"/"
+
+#默认代理
+if enable_proxy:
+	wProxy = random.choice(proxyList)
+else:
+	wProxy = 'default'
+
+
+#定义验证码 每次都用同一个验证码
+postCookie = {
+	'txtIMGCode':codeList[wProxy]['txtIMGCode'],
+	'ImgCode':codeList[wProxy]['ImgCode'],
+	'txtBookingCode':codeList[wProxy]['txtBookingCode'],
+	'BookingCode':codeList[wProxy]['BookingCode'],
+}
+
+reserveTimeData = {
+	'morning':'812',
+	'afternoon':'15',
+	'night':'58',
+}
+
+todayYear = str(datetime.date.today().year)
+
+carList = []
+#COOKIE
+wcookie = cookielib.MozillaCookieJar('./wcookie.txt')
+#设置登录验证码cookie
+wcookie.set_cookie(cookielib.Cookie(version=0, name='ImgCode', value=postCookie['ImgCode'], port=None, port_specified=False, domain='haijia.bjxueche.net', domain_specified=False, domain_initial_dot=False, path='/', path_specified=True, secure=None, expires=(int(time.time())+3600*24*30), discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False))
+
+#设置约车验证码cookie
+wcookie.set_cookie(cookielib.Cookie(version=0, name='BookingCode', value=postCookie['BookingCode'], port=None, port_specified=False, domain='haijia.bjxueche.net', domain_specified=False, domain_initial_dot=False, path='/', path_specified=True, secure=None, expires=(int(time.time())+3600*24*30), discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False))
+siteCookie = urllib2.HTTPCookieProcessor(wcookie)
+#增加代理
+if enable_proxy:
+	wProxy_handler = urllib2.ProxyHandler({'http': 'http://'+wProxy+'/'})
+	runLog = 'proxy:'+wProxy+'\r\n'
+	errorLog(runLog)
+else:
+	wProxy_handler = urllib2.ProxyHandler({})
+	
+opener = urllib2.build_opener(siteCookie, wProxy_handler)	
+
+opener.addheaders = [
+        ('User-Agent','Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:14.0) Gecko/20100101 Firefox/14.0.1 '),
+        ('Referer','http://haijia.bjxueche.net'),
+        ('Content-Type','text/html'),
+        ('Accept-Charset','UTF-8'),
+]
+
+urllib2.install_opener(opener)
+
+#测试代理服务器
+#req = urllib2.Request('http://ip.chinaz.com/')
+#htmldoc = opener.open(req, timeout=timeOut).read()
+#print htmldoc
+#exit()
+	
 
 if checkLock():	
 	runLog="%s 'job done!" %(username)
