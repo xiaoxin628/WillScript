@@ -296,6 +296,7 @@ def checkLock():
 			return False
 	else:
 		return False
+#随机等待时间，不然IP会被封，如果被封，24小时以后解禁。也可以打电话给客服。
 def waitTime():
 	sec = random.randint(1, 6)
 	runLog="wait %s seconds because not will be forden the IP!" %(sec)
@@ -307,5 +308,6 @@ if checkLock():
 	errorLog(runLog)
 	exit(0)
 	
+waitTime()
 hjLogin(username,password,targetUrl)
 
