@@ -175,9 +175,14 @@ def bookingCar(wDate, wTime):
 		jsontext = json.loads(jsondoc)
 		jsonData = json.loads(jsontext['d'])
 		if jsonData[0]['Result'] == True:
+			#写入成功锁文件
 			writeLock(wDate, wTime)
 			runLog = "Booking car done!"
 			errorLog(runLog)
+			#发送邮件
+			wMessage = "用户%s 在%s %s 已经预约成功，请登录http://haijia.bjxueche.net查看" %(username, wDate, wTime)
+			if wEmail:
+				sendEmail("yueche@yueche.com", wEmail, "约车结果", wMessage)
 		runLog = jsondoc
 		errorLog(runLog)
 	except urllib2.HTTPError, error:
@@ -265,6 +270,20 @@ def waitTime():
 	runLog="wait %s seconds or not the IP will be banned!" %(sec)
 	errorLog(runLog)
 	time.sleep(sec)
+#mail someone
+def sendEmail(wFrom, wTo, wTitle, wMessage):
+	SENDMAIL = "/usr/sbin/sendmail" # sendmail location
+	p = os.popen("%s -fName -t" % SENDMAIL, "w")
+	p.write("From: "+wFrom+"\n")
+	p.write("To: "+wTo+"\n")
+	p.write("Subject: "+wTitle+"\n")
+	p.write("\n") # blank line separating headers from body
+	p.write(wMessage+"\n")
+	sts = p.close()
+	if sts != 0:
+		runLog = "Sendmail exit status", sts
+		errorLog(runLog)
+
 
 
 
@@ -279,6 +298,7 @@ targetUrl = 'http://haijia.bjxueche.net/login.aspx'
 username = users[user]['username']
 password = users[user]['password']
 rDate = users[user]['date']
+wEmail = users[user]['email']
 reserveDate = ""
 reserveTime = ""
 logPath = sys.path[0]+"/"

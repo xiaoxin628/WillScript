@@ -46,23 +46,24 @@ codeList = {
 }
 
 #账户信息 多人请赋值多份
-#users['user']['date'].append(['date', 'time'])
+#./hackyc.py user1
+#users['user1']['date'].append(['date', 'time'])
 #date:几月几日 年份程序会自己算出 
 #time:时间 morning afternoon night
-#username:你的身份证号码
-#password:默认为你的生日4位
 
 users['user1'] = {}
-users['user1']['username'] = 'xxxx'
+users['user1']['username'] = 'xxx'
 users['user1']['password'] = 'xxx'
+users['user1']['email'] = 'some@some.com'
 users['user1']['date'] = []
 users['user1']['date'].append(['1020', 'afternoon'])
 users['user1']['date'].append(['1021', 'afternoon'])
 users['user1']['date'].append(['1028', 'afternoon'])
 
 users['user2'] = {}
-users['user2']['username'] = 'xxx'
-users['user2']['password'] = 'xxx'
+users['user2']['username'] = 'xxxxxx'
+users['user2']['password'] = 'xxxx'
+users['user2']['email'] = 'some@some.com'
 users['user2']['date'] = []
 users['user2']['date'].append(['1020', 'afternoon'])
 users['user2']['date'].append(['1021', 'afternoon'])
