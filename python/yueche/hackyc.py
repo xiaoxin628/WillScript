@@ -87,18 +87,22 @@ def findButton():
 					expiredTime =  int(time.time())+3600*24*7
 					#print time.strftime("%Y-%m-%d ", time.localtime(expiredTime)) #debug
 					if expiredTime >= bookTime:
-						rule = "//td[@yyrq and @yysd]"
-						htmldoc = opener.open(targetUrl, timeout=timeOut).read()
-						htmldoc = htmldoc.decode("utf-8", "ignore")
-						htmlString = lxml.html.fromstring(htmldoc)
-						Datelist = htmlString.xpath(rule)
-						tableStr = 'list:\r\n'
-						if	Datelist:
-							for item in Datelist:
-								tableStr += "Date:%s Time:%s Times:%s" %(item.attrib['yyrq'], item.attrib['yysd'], item.text_content().strip())+"\r\n"
-						runLog = "date: %s %s times:%s not found the button" % (searchDate, searchTime, leftTime)
-						runLog += tableStr
-						errorLog(runLog)
+						if bookTime < int(time.time()):
+							runLog="your date: %s %s is passed. remove it from config" %(searchDate, searchTime)
+							errorLog(runLog)
+						else:
+							rule = "//td[@yyrq and @yysd]"
+							htmldoc = opener.open(targetUrl, timeout=timeOut).read()
+							htmldoc = htmldoc.decode("utf-8", "ignore")
+							htmlString = lxml.html.fromstring(htmldoc)
+							Datelist = htmlString.xpath(rule)
+							tableStr = 'list:\r\n'
+							if	Datelist:
+								for item in Datelist:
+									tableStr += "Date:%s Time:%s Times:%s" %(item.attrib['yyrq'], item.attrib['yysd'], item.text_content().strip())+"\r\n"
+							runLog = "date: %s %s times:%s not found the button" % (searchDate, searchTime, leftTime)
+							runLog += tableStr
+							errorLog(runLog)
 					else:
 						runLog="only book car before %s !your date: %s %s" %(time.strftime("%Y-%m-%d", time.localtime(expiredTime)), searchDate, searchTime)
 						errorLog(runLog)
@@ -266,7 +270,7 @@ def checkLock():
 		return False
 #随机等待时间，不然IP会被封，如果被封，24小时以后解禁。也可以打电话给客服。
 def waitTime():
-	sec = random.randint(1, 6)
+	sec = random.randint(1, 5)
 	runLog="wait %s seconds or not the IP will be banned!" %(sec)
 	errorLog(runLog)
 	time.sleep(sec)
@@ -280,8 +284,8 @@ def sendEmail(wFrom, wTo, wTitle, wMessage):
 	p.write("\n") # blank line separating headers from body
 	p.write(wMessage+"\n")
 	sts = p.close()
-	if sts != 0:
-		runLog = "Sendmail exit status", sts
+	if sts is not None:
+		runLog = "Sendmail exit status"+str(sts)
 		errorLog(runLog)
 
 
@@ -368,4 +372,3 @@ if checkLock():
 	
 waitTime()
 hjLogin(username,password,targetUrl)
-
