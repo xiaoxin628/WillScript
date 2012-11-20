@@ -42,16 +42,19 @@ def hjLogin(username,password,url):
 				errorLog(runLog)
 	except urllib2.HTTPError, error:
 			contents = error.read()
-			runLog = contents
+			runLog = "error:" , contents
 			errorLog(runLog)
+			exit()
 	except  urllib2.URLError, error:
 			runLog = "error:",  error.reason
 			errorLog(runLog)
+			exit()
 	except:
 		import traceback,sys
 		runLog="".join(traceback.format_exception(*sys.exc_info()))
 		errorLog(runLog)
 		print "Oh, we got a problem!"
+		exit()
 
 def findButton():
 	waitTime()
@@ -372,3 +375,5 @@ if checkLock():
 	
 waitTime()
 hjLogin(username,password,targetUrl)
+exit()
+
