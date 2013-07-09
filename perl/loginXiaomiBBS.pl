@@ -22,7 +22,7 @@ $agent->show_progress(1);
 ################Request##########################
 my @form = [
 	"LoginForm[username]" =>"someuser",
-	"LoginForm[password]" => unpack('u', "-;&ES:'5Z=34Q,2%`(P``"),
+	"LoginForm[password]" => "somepwd",
 	"LoginForm[rememberMe]" =>1,
 	"yt0" => "登录",
 ];
